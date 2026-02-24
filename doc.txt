@@ -1,0 +1,99 @@
+# Proposed Standard Backend Architecture
+
+This document outlines a robust and scalable structure for the HRMS backend project. The goal is to improve maintainability, scalability, and performance while making future development more efficient.
+
+---
+
+## 1. Proposed Directory Structure
+
+The proposed structure is based on a modular approach, where each business domain (e.g., "users", "clients", "payroll") is self-contained.
+
+```
+D:\Office Projects\HRMS\Backend\
+├── prisma/
+│   └── schema.prisma
+├── src/
+│   ├── api/
+│   │   ├── users/
+│   │   │   ├── user.routes.js        # (Router) - Defines API endpoints
+│   │   │   ├── user.controller.js    # (Controller) - Handles req/res, calls services
+│   │   │   ├── user.service.js       # (Service) - Core business logic
+│   │   │   ├── user.repository.js    # (Repository/DAO) - Database interaction logic
+│   │   │   └── user.validator.js     # (Validator) - Input validation schemas (Joi, Zod, etc.)
+│   │   ├── clients/
+│   │   │   ├── client.routes.js
+│   │   │   ├── client.controller.js
+│   │   │   ├── client.service.js
+│   │   │   ├── client.repository.js
+│   │   │   └── client.validator.js
+│   │   └── index.js                  # Mounts all routers (e.g., app.use('/v1/users', userRoutes))
+│   ├── config/
+│   │   ├── index.js                  # Centralized config export (loads env vars)
+│   │   ├── db.js                     # Database connection (Prisma client instance)
+│   │   └── logger.js                 # Logging configuration (e.g., Winston, Pino)
+│   ├── middleware/
+│   │   ├── auth.middleware.js
+│   │   ├── error.middleware.js       # Centralized error handler
+│   │   └── upload.middleware.js
+│   ├── services/                     # For shared services (e.g., email, notifications)
+│   │   └── email.service.js
+│   ├── utils/
+│   │   ├── apiResponse.js            # Standardized API response format
+│   │   └── constants.js              # Application-wide constants
+│   └── app.js                        # Express app setup, middleware registration
+├── tests/
+│   ├── integration/
+│   │   └── users.test.js
+│   └── unit/
+│       └── user.service.test.js
+├── .env
+├── .gitignore
+├── package.json
+└── server.js                         # (Entry Point) - Initializes server and connects to DB
+```
+
+---
+
+## 2. Explanation of Key Changes & Components
+
+*   **`src/api/`**: This is the core of your application. Each sub-directory represents a feature or domain module (e.g., `users`, `clients`).
+    *   **`.routes.js`**: Defines the API endpoints using Express Router. It maps HTTP methods and paths to controller functions.
+    *   **`.controller.js`**: The entry point for a request. Its only job is to handle the HTTP request and response. It calls the service layer to perform business logic and uses validators to sanitize input. **It should not contain any business logic.**
+    *   **`.service.js`**: Contains the core business logic for the module. It orchestrates data from different sources, performs calculations, and makes decisions. It is called by the controller and calls the repository for data access.
+    *   **`.repository.js` (or `.dao.js`)**: This is the data access layer. Its only responsibility is to interact with the database (e.g., Prisma). All Prisma queries (`prisma.user.create`, `prisma.user.findUnique`) should be here. This isolates your database logic, making it easy to manage and optimize.
+    *   **`.validator.js`**: Contains schemas for validating incoming request bodies, params, and queries. Using libraries like `Zod` or `Joi` is highly recommended.
+
+*   **`src/config/`**: Centralized configuration. `index.js` should use `dotenv` to load environment variables and export them as a single object. This prevents `process.env` from being scattered all over the codebase.
+
+*   **`src/middleware/`**: For Express middleware. Includes a crucial `error.middleware.js` for handling all errors in one place, preventing crashes and ensuring consistent error responses.
+
+*   **`src/services/`**: For logic shared across different modules, like a service for sending emails or SMS.
+
+*   **`tests/`**: A dedicated top-level folder for all tests, separated into `unit` and `integration` tests. This is critical for a robust application.
+
+*   **`server.js`**: The main entry point of the application. It should be clean and simple: import the `app` from `src/app.js`, connect to the database, and start the HTTP server.
+
+---
+
+## 3. Best Practices for Performance & Future Growth
+
+1.  **Stateless Services**: Keep your services stateless. This means they don't hold any data between requests. This is crucial for horizontal scaling (running multiple instances of your app).
+
+2.  **Asynchronous Everything**: Use `async/await` for all I/O operations (database, file system, network calls) to prevent blocking the Node.js event loop.
+
+3.  **Database Performance (Prisma)**:
+    *   **Indexing**: Add database indexes (`@@index([fieldName])`) in your `schema.prisma` for columns that are frequently queried. This dramatically speeds up read operations.
+    *   **Connection Pooling**: Prisma handles this automatically. Ensure your database can handle the number of connections defined in your connection string.
+    *   **Select Fields**: Only query the fields you need using `select` or `include` to reduce data transfer. Example: `prisma.user.findMany({ select: { id: true, name: true } })`.
+
+4.  **Caching**: For frequently accessed, non-critical data, implement a caching layer with tools like **Redis**. This can significantly reduce database load and improve response times. Cache things like user permissions, configuration settings, or public profiles.
+
+5.  **Efficient Queries**: Avoid N+1 query problems. Use Prisma's `include` or batching techniques (`$transaction`) to fetch related data in a single database trip instead of multiple.
+
+6.  **Centralized Logging**: Use a structured logger like **Winston** or **Pino**. They are more performant than `console.log` and allow you to write logs to different transports (file, console, external service) and set log levels (`info`, `warn`, `error`).
+
+7.  **Background Jobs**: For long-running tasks (e.g., sending bulk emails, processing reports), use a job queue like **BullMQ** or **RabbitMQ**. This prevents HTTP requests from timing out and offloads heavy work from the main application thread.
+
+8.  **Code Quality & Consistency**:
+    *   **Linter/Formatter**: Use **ESLint** and **Prettier** to enforce a consistent code style.
+    *   **TypeScript**: For a large-scale project, migrating to TypeScript is highly recommended. It provides static typing, which catches many bugs before runtime and improves developer productivity.

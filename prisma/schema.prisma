@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      Int      @id() @default(autoincrement())
+  name                    String?  @db.VarChar(45)
+  contactMobile           String?  @map("contact_mobile") @db.VarChar(45)
+  alterativecontactMobile String?  @map("alterative_contact_mobile") @db.VarChar(45)
+  email                   String?
+  otp                     String?
+  otpExpiry               DateTime?  @map("otp_expiry")
+  isActive                Boolean  @default(false) @map("is_active")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @default(now()) @map("updated_at")
+  tenants                 Tenant[]
+}
+
+model Tenant {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  user             User             @relation(fields: [userId], references: [id])
+  SellerProperties SellerProperty[]
+  buyerCarts       buyerCart[]
+}
+
+model SellerProperty {
+  id           Int          @id @default(autoincrement())
+  tenantId     Int          @map("tenant_id")
+  propertyName String?      @map("property_name")
+  propertyType PropertyType @map("property_type")
+  userType     UserType      @map("user_type")
+  address      String?
+  city         String?
+  pincode      String?
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @default(now()) @map("updated_at")
+
+  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  propertyImages    PropertyImages[]
+  propertyDcouments PropertyDcoument[]
+  buyerCarts        buyerCart[]
+}
+
+enum PropertyType {
+  OPEN_LAND
+  FLAT_HOUSE
+  COMMERCIAL
+}
+
+enum UserType {
+  PROPERTY_SALLER
+  RENTAL
+}
+
+model PropertyImages {
+  id               Int      @id @default(autoincrement())
+  sellerPropertyId Int      @map("seller_property_id")
+  path             String?
+  imageType        String?  @map("image_type")
+  order            Int?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @map("updated_at")
+
+  SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
+}
+
+model PropertyDcoument {
+  id               Int      @id @default(autoincrement())
+  sellerPropertyId Int      @map("seller_property_id")
+  path             String?
+  fileType         String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @map("updated_at")
+
+  SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
+}
+
+model buyerCart {
+  id               Int @id @default(autoincrement())
+  tenantId         Int @map("tenant_id")
+  sellerPropertyId Int @map("seller_property_id")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @default(now()) @map("updated_at")
+
+  SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
+  tenant         Tenant         @relation(fields: [tenantId], references: [id])
+}
+
+
+// model rental {
+//   id               Int @id @default(autoincrement())
+//   tenantId         Int @map("tenant_id")
+//   sellerPropertyId Int @map("seller_property_id")
+//   createdAt              DateTime @default(now()) @map("created_at")
+//   updatedAt              DateTime @default(now()) @map("updated_at")
+
+//   SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
+//   tenant         Tenant         @relation(fields: [tenantId], references: [id])
+// }
+
+// model 
