@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id                      Int      @id() @default(autoincrement())
-  name                    String?  @db.VarChar(45)
-  contactMobile           String?  @map("contact_mobile") @db.VarChar(45)
-  alterativecontactMobile String?  @map("alterative_contact_mobile") @db.VarChar(45)
+  id                      Int              @id() @default(autoincrement())
+  name                    String?          @db.VarChar(45)
+  contactMobile           String?          @map("contact_mobile") @db.VarChar(45)
+  alterativecontactMobile String?          @map("alterative_contact_mobile") @db.VarChar(45)
   email                   String?
   otp                     String?
-  otpExpiry               DateTime?  @map("otp_expiry")
-  isActive                Boolean  @default(false) @map("is_active")
-  createdAt               DateTime @default(now()) @map("created_at")
-  updatedAt               DateTime @default(now()) @map("updated_at")
+  otpExpiry               DateTime?        @map("otp_expiry")
+  isActive                Boolean          @default(false) @map("is_active")
+  createdAt               DateTime         @default(now()) @map("created_at")
+  updatedAt               DateTime         @default(now()) @map("updated_at")
   tenants                 Tenant[]
+  sellerProperties        SellerProperty[]
 }
 
 model Tenant {
@@ -27,26 +28,30 @@ model Tenant {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
-  user             User             @relation(fields: [userId], references: [id])
-  SellerProperties SellerProperty[]
-  buyerCarts       buyerCart[]
+  user       User        @relation(fields: [userId], references: [id])
+  buyerCarts buyerCart[]
 }
 
 model SellerProperty {
-  id           Int          @id @default(autoincrement())
-  tenantId     Int          @map("tenant_id")
-  propertyName String?      @map("property_name")
-  propertyType PropertyType @map("property_type")
-  userType     UserType      @map("user_type")
-  address      String?
-  city         String?
-  pincode      String?
-  createdAt    DateTime     @default(now()) @map("created_at")
-  updatedAt    DateTime     @default(now()) @map("updated_at")
+  id            Int          @id @default(autoincrement())
+  userId        Int          @map("user_id")
+  fristName     String?      @map("frist_name")
+  lastName      String?      @map("last_name")
+  email         String?
+  aadharNumber  String?      @map("aadhar_number")
+  contactNumber String?      @map("contact_number")
+  description   String?   
+  propertyType  PropertyType @map("property_type")
+  userType      UserType     @map("user_type")
+  address       String?
+  city          String?
+  pincode       String?
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @default(now()) @map("updated_at")
 
-  tenant            Tenant             @relation(fields: [tenantId], references: [id])
+  user              User               @relation(fields: [userId], references: [id])
   propertyImages    PropertyImages[]
-  propertyDcouments PropertyDcoument[]
+  propertyDocuments PropertyDocument[]
   buyerCarts        buyerCart[]
 }
 
@@ -66,6 +71,8 @@ model PropertyImages {
   sellerPropertyId Int      @map("seller_property_id")
   path             String?
   imageType        String?  @map("image_type")
+  fileType         String?  @map("file_type")
+  fileName         String?  @map("file_name")
   order            Int?
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @default(now()) @map("updated_at")
@@ -73,11 +80,12 @@ model PropertyImages {
   SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
 }
 
-model PropertyDcoument {
+model PropertyDocument {
   id               Int      @id @default(autoincrement())
   sellerPropertyId Int      @map("seller_property_id")
   path             String?
-  fileType         String?
+  fileType         String?  @map("file_type")
+  fileName         String?  @map("file_name")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @default(now()) @map("updated_at")
 
@@ -85,16 +93,15 @@ model PropertyDcoument {
 }
 
 model buyerCart {
-  id               Int @id @default(autoincrement())
-  tenantId         Int @map("tenant_id")
-  sellerPropertyId Int @map("seller_property_id")
-  createdAt              DateTime @default(now()) @map("created_at")
-  updatedAt              DateTime @default(now()) @map("updated_at")
+  id               Int      @id @default(autoincrement())
+  tenantId         Int      @map("tenant_id")
+  sellerPropertyId Int      @map("seller_property_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @map("updated_at")
 
   SellerProperty SellerProperty @relation(fields: [sellerPropertyId], references: [id])
   tenant         Tenant         @relation(fields: [tenantId], references: [id])
 }
-
 
 // model rental {
 //   id               Int @id @default(autoincrement())
