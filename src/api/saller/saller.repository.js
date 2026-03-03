@@ -13,9 +13,12 @@ export default class sellerRepository {
 
     async fetchSellerList() {
         return await prisma.sellerProperty.findMany({
-            include:{
-                PropertyImages: true
-            }
+            include: {
+                propertyImages: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
         });
     };
 
@@ -46,6 +49,20 @@ export default class sellerRepository {
                 fileType: data.mimetype,
                 createdAt: new Date()
             }
+        });
+    };
+
+    async fetchSellerPropertyByUserId(userId) {
+        return await prisma.sellerProperty.findMany({
+            where:{
+                userId: userId
+            },
+            include: {
+                propertyImages: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
         });
     };
 };

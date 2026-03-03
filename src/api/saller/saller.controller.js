@@ -85,7 +85,10 @@ class sellerController {
         res.status(200).json(new ApiResponse(200, responseData, "Fetch Data Successfully"));
     });
 
-
+    fetchSellerPropertyByUserId = catchAsync(async (req, res) => {
+        const responseData = await sellerService.getSellerPropertyByUserId(req.params.userid);
+        res.status(200).json(new ApiResponse(200, responseData, "Fetch Data Successfully"));
+    });
 
 };
 

@@ -53,4 +53,7 @@ export default class MenuService {
         return await sellerRepository.fetchSellerById(id);
     };
 
+    getSellerPropertyByUserId = async (userId) => {
+        return await sellerRepository.fetchSellerPropertyByUserId(userId);
+    }
 };
