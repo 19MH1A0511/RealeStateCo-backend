@@ -23,8 +23,14 @@ export default class sellerRepository {
     };
 
     async fetchSellerById(id) {
-        return await prisma.sellerProperty.findById({
-            where: id
+        return await prisma.sellerProperty.findUnique({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                propertyImages: true,
+                propertyDocuments: true,
+            },
         });
     };
 
@@ -54,8 +60,8 @@ export default class sellerRepository {
 
     async fetchSellerPropertyByUserId(userId) {
         return await prisma.sellerProperty.findMany({
-            where:{
-                userId: userId
+            where: {
+                userId: Number(userId)
             },
             include: {
                 propertyImages: true,
@@ -65,4 +71,8 @@ export default class sellerRepository {
             },
         });
     };
+
+    async updateSeller(data) {
+        return await prisma.sellerProperty.update({ data })
+    }
 };

@@ -10,5 +10,6 @@ sellerRouter.post("/add",sellerController.createseller);
 sellerRouter.get("/list",sellerController.fetchsellerList); //protects.protect,
 sellerRouter.get("/getbyid/:id",sellerController.fetchSellerById);
 sellerRouter.get("/getsellerpropertybyuserid/:userid",sellerController.fetchSellerPropertyByUserId);
+sellerRouter.put("/edit",sellerController.updateSeller);
 
 export default sellerRouter;

@@ -22,7 +22,7 @@ export default class MenuService {
 
         const mapData = {
             fristName: data?.firstName?.trim() || null,
-            userId: data?.userId,
+            userId: Number(data?.userId),
             lastName: data?.lastName?.trim() || null,
             email: data?.email?.trim() || null,
             contactNumber: data?.contactNumber?.trim() || null,
@@ -55,5 +55,23 @@ export default class MenuService {
 
     getSellerPropertyByUserId = async (userId) => {
         return await sellerRepository.fetchSellerPropertyByUserId(userId);
-    }
+    };
+
+    updateSeller = async (data) => {
+        const mapData = {
+            fristName: data?.firstName?.trim() || null,
+            userId: Number(data?.userId),
+            lastName: data?.lastName?.trim() || null,
+            email: data?.email?.trim() || null,
+            contactNumber: data?.contactNumber?.trim() || null,
+            description: data?.description || null,
+            propertyType: "COMMERCIAL",
+            userType: "PROPERTY_SALLER",
+            aadharNumber: null,
+            address: data?.address?.trim() || null,
+            city: data?.city?.trim() || null,
+            pincode: data?.pincode || null,
+        };
+        return await sellerRepository.updateSeller(mapData);
+    };
 };
