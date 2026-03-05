@@ -26,6 +26,7 @@ export default class MenuService {
             lastName: data?.lastName?.trim() || null,
             email: data?.email?.trim() || null,
             contactNumber: data?.contactNumber?.trim() || null,
+            price: data?.price || null,
             description: data?.description || null,
             propertyType: "COMMERCIAL",
             userType: "PROPERTY_SALLER",
