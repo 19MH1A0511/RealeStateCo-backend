@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import compression from "compression";
-import apiRouter from "./api/index.js";
+import apiRouter from "./index.js";
 // import { errorMiddleware } from "./middleware/error.middleware.js";
 // import path from "path";
 // import { fileURLToPath } from "url";
