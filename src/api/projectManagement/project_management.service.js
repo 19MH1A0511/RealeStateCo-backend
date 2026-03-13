@@ -7,11 +7,11 @@ const projectManagementRepository = new ProjectManagementRepository();
 export default class ProjectManagementService {
 
     addProjectManagement = async (data) => {
-        if (data?.type) {
-            if (data.type === "Interior") {
-                data.type = "interior_design";
-            };
-        };
+        // if (data?.type) {
+        //     if (data.type === "Interior") {
+        //         data.type = "interior_design";
+        //     };
+        // };
         const mapData = {
             fristName: data?.firstName?.trim() || null,
             lastName: data?.lastName?.trim() || null,
@@ -47,10 +47,7 @@ export default class ProjectManagementService {
         return await projectManagementRepository.createWishlistInDb(mapData);
     };
 
-    removeWishlistByUserId = async (data) => {
-        if (!data.userId || !data.sellerPropertyId) {
-            throw new ApiError(400, "User ID and Seller Property ID are required");
-        }   
-        return await projectManagementRepository.removeWishlistByUserIdFromDb(data);
+    removeWishlistById = async (id) => {
+        return await projectManagementRepository.removeWishlistByIdFromDb(id);
     };
 };

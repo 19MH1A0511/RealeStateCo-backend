@@ -11,6 +11,6 @@ projectManagementRouter.post("/add",projectManagementController.createProjectMan
 //whishlist
 projectManagementRouter.get("/wishlist/:userId",projectManagementController.getWishlistByUserId);
 projectManagementRouter.post("/wishlist/add",projectManagementController.addToWishlist);
-projectManagementRouter.post("/wishlist/remove",projectManagementController.removeFromWishlist);
+projectManagementRouter.delete("/wishlist/remove/:id",projectManagementController.removeFromWishlist);
 
 export default projectManagementRouter;

@@ -27,7 +27,7 @@ class ProjectManagementController {
     });
 
     removeFromWishlist = catchAsync(async (req, res) => {
-        const wishlist = await projectManagementService.removeWishlistByUserId(req.body);
+        const wishlist = await projectManagementService.removeWishlistById(req.params.id);
         res.status(200).json(new ApiResponse(200,wishlist, "Wishlist removed successfully"));
     });
 };

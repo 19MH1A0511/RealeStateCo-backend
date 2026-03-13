@@ -24,12 +24,9 @@ export default class ProjectManagementRepository {
         return await prisma.buyerCart.create({ data });
     };
 
-    async removeWishlistByUserIdFromDb(data) {
-        return await prisma.buyerCart.deleteMany({
-            where: {
-                userId: Number(data.userId),
-                sellerPropertyId: Number(data.sellerPropertyId),
-            },
+    async removeWishlistByIdFromDb(id) {
+        return await prisma.buyerCart.delete({
+            where: { id: Number(id) },
         });
     };
 
