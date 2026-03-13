@@ -7,8 +7,8 @@ const projectManagementRepository = new ProjectManagementRepository();
 export default class ProjectManagementService {
 
     addProjectManagement = async (data) => {
-        if(data?.type){
-            if(data.type === "Interior"){
+        if (data?.type) {
+            if (data.type === "Interior") {
                 data.type = "interior_design";
             };
         };
@@ -27,5 +27,30 @@ export default class ProjectManagementService {
             userId: Number(data?.userId),
         };
         return await projectManagementRepository.createProjectManagementInDb(mapData);
+    };
+
+    //wishlist
+    fetchWishlistByUserId = async (userId) => {
+        if (!userId) {
+            throw new ApiError(400, "User ID is required");
+        };
+        return await projectManagementRepository.getWishlistByUserIdFromDb(userId);
+    };
+
+    addWishlistByUserId = async (data) => {
+
+        const mapData = {
+            userId: Number(data.userId),
+            sellerPropertyId: Number(data.sellerPropertyId),
+            createdAt: new Date(),
+        };
+        return await projectManagementRepository.createWishlistInDb(mapData);
+    };
+
+    removeWishlistByUserId = async (data) => {
+        if (!data.userId || !data.sellerPropertyId) {
+            throw new ApiError(400, "User ID and Seller Property ID are required");
+        }   
+        return await projectManagementRepository.removeWishlistByUserIdFromDb(data);
     };
 };
