@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ClientInfo {
+  ClientInfoID  BigInt          @id(map: "PK_ClientInfoID") @default(autoincrement())
+  client_name   String          @unique
+  firm_name     String          @db.VarChar(45)
+  status        Int?            @default(0)
+  created_at    DateTime
+  updated_at    DateTime        @default(now())
+  updated_by    Int?
+  ClientDetails ClientDetails[]
+  User          User[]
+  Role          Role[]
+  ClientInfoLog ClientInfoLog[]
+}
+
+model ClientDetails {
+  ClientDetailsID   BigInt     @id(map: "PK_ClientDetailsID") @default(autoincrement())
+  email             String
+  contact_number    String
+  address           String?
+  state_name        String?
+  state_isoCode     String?
+  brand             String?
+  country_name      String?
+  country_isoCode   String?
+  country_phonecode String?
+  country           Country?   @relation(fields: [country_isoCode], references: [isoCode], onDelete: SetNull)
+  currency          String?
+  agreement_date    DateTime?
+  renewal_date      DateTime?
+  address_proof     String?
+  tax_proof         String?
+  logo_exists       Boolean?
+  file_name         String?    @db.VarChar(155)
+  file_extension    String?    @db.VarChar(10)
+  created_at        DateTime
+  updated_at        DateTime   @default(now())
+  ClientInfoID      BigInt     @unique
+  ClientInfo        ClientInfo @relation(fields: [ClientInfoID], references: [ClientInfoID])
+}
+
+model ClientInfoLog {
+  ClientInfoLogId BigInt      @id(map: "PK_ClientInfoLogId") @default(autoincrement())
+  clientId        BigInt?
+  renewalDate     DateTime?
+  createdAt       DateTime?
+  createdBy       BigInt?
+  client          ClientInfo? @relation(fields: [clientId], references: [ClientInfoID])
+  createdUser     User?       @relation(fields: [createdBy], references: [UserID])
+}
+
+model User {
+  UserID               BigInt          @id(map: "PK_UserID") @default(autoincrement())
+  username             String
+  email                String          @unique
+  password             String
+  phonenumber          String
+  status               Boolean
+  clientId             BigInt
+  roleId               BigInt
+  createddate          DateTime        @default(now())
+  updateddate          DateTime?       @updatedAt
+  IsAdmin              Boolean
+  reportsTo            BigInt?
+  person_name          String?         @db.VarChar(75)
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  ClientInfo           ClientInfo      @relation(fields: [clientId], references: [ClientInfoID])
+  Role                 Role            @relation(fields: [roleId], references: [RoleID])
+  ReportsToUser        User?           @relation("UserReportsTo", fields: [reportsTo], references: [UserID])
+  Subordinates         User[]          @relation("UserReportsTo")
+  roleuser             Role[]          @relation("roleuser")
+  ClientInfoLog        ClientInfoLog[]
+
+  @@unique([email, clientId])
+  @@unique([username, clientId])
+}
+
+model Role {
+  RoleID        BigInt      @id(map: "PK_RoleID") @default(autoincrement())
+  rolename      String
+  clientId      BigInt?
+  createdBy     BigInt?
+  createddate   DateTime?   @default(now())
+  updateddate   DateTime?
+  ClientInfo    ClientInfo? @relation(fields: [clientId], references: [ClientInfoID])
+  CreatedByUser User?       @relation("roleuser", fields: [createdBy], references: [UserID])
+  Users         User[]
+}
+
+model Menu {
+  MenuID     BigInt     @id(map: "PK_MenuID") @default(autoincrement())
+  menu_name  String
+  icon_code  String
+  created_at DateTime   @default(now())
+  MenuItems  MenuItem[]
+}
+
+model MenuItem {
+  MenuItemID   BigInt   @id(map: "PK_MenuItemID") @default(autoincrement())
+  menuId       BigInt
+  display_name String   @db.VarChar(45)
+  action_url   String   @db.VarChar(255)
+  sort         Int
+  created_at   DateTime @default(now())
+  icon_code    String?  @db.VarChar(45)
+  status       Int      @default(1)
+  Menu         Menu     @relation(fields: [menuId], references: [MenuID], onDelete: Cascade)
+}
+
+model Country {
+  CountryID     BigInt          @id(map: "PK_CountryID") @default(autoincrement()) // Primary key
+  isoCode       String          @unique
+  name          String
+  phonecode     String
+  flag          String?
+  currency      String?
+  latitude      String?
+  longitude     String?
+  createdAt     DateTime?       @default(now())
+  ClientDetails ClientDetails[]
+}
+
+model State {
+  stateId     BigInt    @id(map: "PK_stateId") @default(autoincrement()) // Primary key
+  name        String
+  isoCode     String
+  countryCode String
+  latitude    String?
+  longitude   String?
+  createdAt   DateTime? @default(now())
+}
+
+model SuperUser {
+  superUserId          BigInt      @id(map: "PK_superUserId") @default(autoincrement())
+  username             String
+  email                String
+  password             String
+  phonenumber          String
+  status               Boolean
+  clientId             BigInt?
+  roleId               BigInt?
+  createddate          DateTime    @default(now())
+  updateddate          DateTime?   @updatedAt
+  IsAdmin              Boolean
+  reportsToId          BigInt?
+  person_name          String?     @db.VarChar(75)
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  ReportsTo            SuperUser?  @relation("UserReportsTo", fields: [reportsToId], references: [superUserId])
+  Subordinates         SuperUser[] @relation("UserReportsTo")
+}
