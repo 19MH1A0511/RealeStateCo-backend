@@ -4,7 +4,7 @@ import { ApiError } from "../../utils/apiError.js";
 
 const sellerRepository = new SellerRepository();
 
-export default class MenuService {
+export default class SellerService {
 
     addseller = async (data) => {
         // const checkDuplicateData = await sellerRepository.checkDuplicateField({
@@ -28,12 +28,14 @@ export default class MenuService {
             contactNumber: data?.contactNumber?.trim() || null,
             price: data?.price || null,
             description: data?.description || null,
-            propertyType: "COMMERCIAL",
+            propertyType: data?.propertyType || null,
             userType: "PROPERTY_SALLER",
             aadharNumber: null,
             address: data?.address?.trim() || null,
             city: data?.city?.trim() || null,
             pincode: data?.pincode || null,
+            propertyName: data?.propertyName?.trim() || null,
+
         };
         return await sellerRepository.createSellerInDb(mapData);
     };

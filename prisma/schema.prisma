@@ -22,6 +22,7 @@ model User {
   sellerProperties        SellerProperty[]
   buyerCarts              buyerCart[]
   projectManagements      projectManagement[]
+  reviews                 reviews[]
 }
 
 // model Tenant {
@@ -35,22 +36,24 @@ model User {
 // }
 
 model SellerProperty {
-  id            Int          @id @default(autoincrement())
-  userId        Int          @map("user_id")
-  fristName     String?      @map("frist_name")
-  lastName      String?      @map("last_name")
+  id            Int           @id @default(autoincrement())
+  userId        Int           @map("user_id")
+  fristName     String?       @map("frist_name")
+  lastName      String?       @map("last_name")
   email         String?
-  aadharNumber  String?      @map("aadhar_number")
-  contactNumber String?      @map("contact_number")
-  price         Float?       @map("price")
+  aadharNumber  String?       @map("aadhar_number")
+  contactNumber String?       @map("contact_number")
+  price         Float?        @map("price")
   description   String?
-  propertyType  PropertyType @map("property_type")
-  userType      UserType     @map("user_type")
+  propertyType  PropertyType  @map("property_type")
+  propertyName  String?       @map("property_name")
+  userType      UserType      @map("user_type")
   address       String?
   city          String?
   pincode       String?
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime     @default(now()) @map("updated_at")
+  status        sellerStatus? @map("available")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @map("updated_at")
 
   user              User               @relation(fields: [userId], references: [id])
   propertyImages    PropertyImages[]
@@ -64,11 +67,17 @@ enum PropertyType {
   COMMERCIAL
   NewProjects
   LuxuryHomes
-  Commercial
+  // Commercial
   Plots
   Villas
   Apartments
+  Others
+}
 
+enum sellerStatus {
+  available
+  sold
+  pending
 }
 
 enum UserType {
@@ -137,4 +146,18 @@ enum projectType {
   renovation
   interior_design
   inspection
+}
+
+model reviews {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  Name      String?  @map("frist_name")
+  email     String?
+  phone     String?
+  review    String?
+  rating    Int?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
 }
