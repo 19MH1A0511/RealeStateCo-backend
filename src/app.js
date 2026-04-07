@@ -13,7 +13,7 @@ const app = express();
 const corsOptions = {
   origin: [
     "http://localhost:3000",
-    // "http://192.168.1.9:5173",
+    "http://localhost:5173",
     "https://realestateco-backend.onrender.com",
     "https://realestatecoin-phi.vercel.app",
     "https://realestatecoin-git-main-gottumukkals-projects.vercel.app",
