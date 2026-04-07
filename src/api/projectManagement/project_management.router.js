@@ -7,6 +7,7 @@ const projectManagementRouter = express.Router();
 
 
 projectManagementRouter.post("/add",projectManagementController.createProjectManagement);
+projectManagementRouter.get("/getlist/:projectType",projectManagementController.getProjectManagementList)
 
 //whishlist
 projectManagementRouter.get("/wishlist/:userId",projectManagementController.getWishlistByUserId);

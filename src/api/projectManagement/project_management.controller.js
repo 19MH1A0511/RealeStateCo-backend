@@ -14,6 +14,11 @@ class ProjectManagementController {
         res.status(200).json(new ApiResponse(200, "Project Management created successfully", newProjectManagement));
     });
 
+    getProjectManagementList = catchAsync(async (req, res) => {
+        const responseData = await projectManagementService.getProjectManagementData(req.params.projectType);
+        res.status(200).json(new ApiResponse(200,responseData,  `${req.params.projectType} data retrieved successfully`));
+    });
+
     //wishlist
     getWishlistByUserId = catchAsync(async (req, res) => {
         const userId = req.params.userId;

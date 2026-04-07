@@ -6,6 +6,17 @@ export default class ProjectManagementRepository {
         return await prisma.projectManagement.create({ data })
     };
 
+    async fetchProjectManagementData(projectType) {
+        return await prisma.projectManagement.findMany({
+            where: {
+                projectType: projectType
+            },
+            orderBy: {
+                createdAt: 'desc' 
+            }
+        });
+    };
+
     //wishlist
     async getWishlistByUserIdFromDb(userId) {
         return await prisma.buyerCart.findMany({

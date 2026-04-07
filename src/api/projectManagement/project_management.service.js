@@ -29,6 +29,10 @@ export default class ProjectManagementService {
         return await projectManagementRepository.createProjectManagementInDb(mapData);
     };
 
+    getProjectManagementData = async  (projectType) => {
+        return await projectManagementRepository.fetchProjectManagementData(projectType)
+    };
+
     //wishlist
     fetchWishlistByUserId = async (userId) => {
         if (!userId) {
