@@ -3,6 +3,7 @@ import { ApiResponse } from "../../utils/apiResponse.js";
 import Commons from "../../utils/commons.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { ApiError } from "../../utils/apiError.js";
+import S3ClientImageUpload from "../../utils/awsS3BucketImageUpload.js";
 
 import multer from "multer";
 // import fs from "fs";
@@ -14,6 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const sellerService = new SellerService();
+const s3ClientImageUpload = new S3ClientImageUpload();
 const commons = new Commons();
 
 class sellerController {
@@ -49,6 +51,28 @@ class sellerController {
                                     contentType: file.mimetype,
                                 });
                                 const publicUrl = `${process.env.BUNNY_PUBLIC_URL}/${relativePath}`;
+                                const fileData = {
+                                    filename: file.originalname,
+                                    sellerId: sellerId,
+                                    path: publicUrl,
+                                    mimetype: file.mimetype,
+                                    size: file.size,
+                                };
+                                if (fieldName === "documents") {
+                                    await sellerService.uploadSellerDocumentInBunny(fileData);
+                                };
+                                if (fieldName === "images") {
+                                    await sellerService.uploadSellerImageInBunny(fileData);
+                                };
+                            } else if (process.env.STORAGE_DRIVER === "aws") {
+                                const key = `${process.env.STORAGE_BASE_PATH}/uploads/user/${sellerId}/${fieldName}/${file.originalname}`;
+
+                                const publicUrl = await s3ClientImageUpload.uploadFile({
+                                    fileBuffer: file.buffer,
+                                    fileName: key,
+                                    contentType: file.mimetype,
+                                });
+                                // const publicUrl = `${process.env.BUNNY_PUBLIC_URL}/${relativePath}`;
                                 const fileData = {
                                     filename: file.originalname,
                                     sellerId: sellerId,
@@ -150,6 +174,16 @@ class sellerController {
         res.status(200).json(new ApiResponse(200, responseData, "Fetch Data Successfully"));
     });
 
+
+    getPropertyListByCity = catchAsync(async (req, res) => {
+        const responseData = await sellerService.fetchPropertyListByCity(req.params.city);
+        res.status(200).json(new ApiResponse(200, responseData, "Fetch Data Successfully"));
+    });
+
+    getCities = catchAsync(async (req, res) => {
+        const responseData = await sellerService.fetchCities();
+        res.status(200).json(new ApiResponse(200, responseData, "Fetch Data Successfully"));
+    });
 
 };
 

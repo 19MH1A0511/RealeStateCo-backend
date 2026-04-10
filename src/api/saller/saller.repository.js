@@ -85,5 +85,26 @@ export default class sellerRepository {
         });
     };
 
+    async getPropertyListByCity(city){
+        return await prisma.sellerProperty.findMany({
+            where:{
+                city: city
+            },
+            include: {
+                propertyImages: true,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+    };
 
+    async getCities(){
+        return await prisma.sellerProperty.findMany({
+            distinct: ['city'],
+            select: {
+                city: true,
+            },
+        });
+    };
 };

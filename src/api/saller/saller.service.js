@@ -7,19 +7,7 @@ const sellerRepository = new SellerRepository();
 export default class SellerService {
 
     addseller = async (data) => {
-        // const checkDuplicateData = await sellerRepository.checkDuplicateField({
-        //     firstName: {
-        //         equals: data.firstName.trim(),
-        //         mode: "insensitive"
-        //     },
-        //     contactMobile: data.contactMobile,
-        //     email: data.email.trim(),
-            
-        // });
-        // if (checkDuplicateData) {
-        //     throw new ApiError(409, `already seller day exists. Please use a different data.`);
-        // };
-
+       
         const mapData = {
             fristName: data?.firstName?.trim() || null,
             userId: Number(data?.userId),
@@ -35,7 +23,16 @@ export default class SellerService {
             city: data?.city?.trim() || null,
             pincode: data?.pincode || null,
             propertyName: data?.propertyName?.trim() || null,
-
+            furnishing: data?.furnishing?.trim() || null,
+            facing: data?.facing?.trim() || null,
+            parkingAvailable: data?.parkingAvailable === "true"|| false,
+            bulidingAge: data?.bulidingAge?.trim() || null,
+            totalRooms: data?.totalRooms || null,
+            floorNumbers: data?.floorNumbers || null,
+            landMark: data?.landMark?.trim() || null,
+            status: "pending",
+            state: data?.state || null,
+            landArea: data?.landArea || null,
         };
         return await sellerRepository.createSellerInDb(mapData);
     };
@@ -80,5 +77,13 @@ export default class SellerService {
 
     fetchSellerPropertyTypeList = async (buyertype) => {
         return await sellerRepository.getSellerPropertyTypeList(buyertype);
+    };
+
+    fetchPropertyListByCity = async (city) => {
+        return await sellerRepository.getPropertyListByCity(city);
+    };
+
+    fetchCities = async () => {
+        return await sellerRepository.getCities();
     };
 };

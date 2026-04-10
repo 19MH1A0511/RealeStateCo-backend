@@ -36,24 +36,33 @@ model User {
 // }
 
 model SellerProperty {
-  id            Int           @id @default(autoincrement())
-  userId        Int           @map("user_id")
-  fristName     String?       @map("frist_name")
-  lastName      String?       @map("last_name")
-  email         String?
-  aadharNumber  String?       @map("aadhar_number")
-  contactNumber String?       @map("contact_number")
-  price         Float?        @map("price")
-  description   String?
-  propertyType  PropertyType  @map("property_type")
-  propertyName  String?       @map("property_name")
-  userType      UserType      @map("user_type")
-  address       String?
-  city          String?
-  pincode       String?
-  status        sellerStatus? @map("available")
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @default(now()) @map("updated_at")
+  id               Int           @id @default(autoincrement())
+  userId           Int           @map("user_id")
+  fristName        String?       @map("frist_name")
+  lastName         String?       @map("last_name")
+  propertyName     String?       @map("property_name")
+  email            String?
+  aadharNumber     String?       @map("aadhar_number")
+  contactNumber    String?       @map("contact_number")
+  price            String?        @map("price")
+  description      String?
+  propertyType     PropertyType  @map("property_type")
+  furnishing       furnishType?  @map("furnishing")
+  state            String?       @map("state")
+  landArea         String?        @map("land_area")
+  facing           String?       @map("facing")
+  parkingAvailable Boolean?      @map("parking_available")
+  bulidingAge      String?          @map("buliiding_age")
+  totalRooms       String?          @map("total_floors")
+  floorNumbers     String?       @map("floor_number")
+  landMark          String?       @map("land_mark")
+  userType         UserType      @map("user_type")
+  address          String?
+  city             String?
+  pincode          String?
+  status           sellerStatus? @map("available")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @default(now()) @map("updated_at")
 
   user              User               @relation(fields: [userId], references: [id])
   propertyImages    PropertyImages[]
@@ -72,6 +81,12 @@ enum PropertyType {
   Villas
   Apartments
   Others
+}
+
+enum furnishType {
+  furnished
+  semi_furnished
+  unfurnished
 }
 
 enum sellerStatus {

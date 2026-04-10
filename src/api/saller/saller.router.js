@@ -12,5 +12,7 @@ sellerRouter.get("/getbyid/:id",sellerController.fetchSellerById);
 sellerRouter.get("/getsellerpropertybyuserid/:userid",sellerController.fetchSellerPropertyByUserId);
 sellerRouter.put("/edit",sellerController.updateSeller);
 sellerRouter.get("/getpropertytypelist/:buyertype",sellerController.getPropertyTypeList);
+sellerRouter.get("/getpropertybycity/:city",sellerController.getPropertyListByCity);
+sellerRouter.get("/getcities",sellerController.getCities);
 
 export default sellerRouter;
